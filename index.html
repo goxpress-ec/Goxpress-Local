@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>GOXPRESS · Calculadora Inteligente</title>
+    <link rel="icon" href="favicon.ico">
+    <style>
+        /* ===== VARIABLES CSS PARA TEMAS ===== */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0FA958, #0A7C43);
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --primary-color: #0A7C43;
+            --accent-color: #FF8A00;
+            --card-bg: #f8fafd;
+            --border-color: #e0e8f0;
+            --input-bg: white;
+            --input-border: #d9e2ef;
+            --stats-bg: #ffffff;
+            --pago-bg: #f0f4fa;
+            --historial-bg: #f0f4fa;
+            --btn-secondary-bg: #eaf0f8;
+            --btn-secondary-color: #0A7C43;
+            --table-bg: #f8fafd;
+            --footer-color: #0A7C43;
+            --toggle-bg: white;
+            --toggle-color: #0A7C43;
+            --toggle-border: #0A7C43;
+            --toast-bg: #0A7C43;
+            --badge-local-bg: #0A7C43;
+            --badge-local-text: white;
+            --stat-badge-bg: #FF8A00;
+            --stat-badge-text: #0A7C43;
+            --select-arrow: #0A7C43;
+        }
+
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a3b2a, #0a2e1c);
+            --container-bg: #1e2a24;
+            --text-color: #e0e0e0;
+            --primary-color: #2ecc71;
+            --accent-color: #FF8A00;
+            --card-bg: #2a3730;
+            --border-color: #3a4a40;
+            --input-bg: #33403a;
+            --input-border: #5a6b60;
+            --stats-bg: #2a3730;
+            --pago-bg: #2a3730;
+            --historial-bg: #2a3730;
+            --btn-secondary-bg: #33403a;
+            --btn-secondary-color: #FF8A00;
+            --table-bg: #2a3730;
+            --footer-color: #a3d0b0;
+            --toggle-bg: #2a3730;
+            --toggle-color: #FF8A00;
+            --toggle-border: #FF8A00;
+            --toast-bg: #2ecc71;
+            --badge-local-bg: #2ecc71;
+            --badge-local-text: #1e2a24;
+            --stat-badge-bg: #FF8A00;
+            --stat-badge-text: #1e2a24;
+            --select-arrow: #FF8A00;
+        }
+
+        /* ===== ESTILOS BASE ===== */
+        * { box-sizing: border-box; margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body {
+            background: var(--bg-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0.5rem;
+            transition: background 0.3s;
+        }
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background: var(--container-bg);
+            color: var(--text-color);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.25);
+            overflow: hidden;
+            padding: 1.5rem 1.5rem 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Botón flotante para modo oscuro (solo emoji) */
+        .dark-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--toggle-bg);
+            border: 2px solid var(--toggle-border);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            color: var(--toggle-color);
+            line-height: 1;
+        }
+        .dark-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Resto de estilos usando variables */
+        .logo-center {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .logo-center img {
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .logo-center h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-top: 0.2rem;
+            transition: color 0.3s;
+        }
+        .logo-center .slogan {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+            font-weight: 400;
+            border-left: 5px solid var(--accent-color);
+            padding-left: 1rem;
+            margin: 0.5rem auto 0;
+            max-width: 400px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+        input, select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--input-border);
+            border-radius: 3rem;
+            font-size: 1rem;
+            transition: 0.2s;
+            background: var(--input-bg);
+            color: var(--text-color);
+            outline: none;
+        }
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(255,138,0,0.2);
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            background: var(--stats-bg);
+            padding: 1rem 1.2rem;
+            border-radius: 4rem;
+            border: 2px solid var(--accent-color);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--primary-color);
+        }
+        .stat-badge {
+            background: var(--stat-badge-bg);
+            color: var(--stat-badge-text);
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            transition: background 0.3s, color 0.3s;
+        }
+        .cliente-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .cliente-row .input-group {
+            flex: 1 1 200px;
+            margin-bottom: 0;
+        }
+        .pago-container {
+            background: var(--pago-bg);
+            border-radius: 2rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--accent-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .pago-label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        .radio-group input[type="radio"] {
+            width: auto;
+            margin: 0;
+            accent-color: var(--accent-color);
+        }
+        .valor-pedido-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+        .valor-pedido-container span {
+            font-weight: 600;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+        .valor-pedido-container input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 2rem;
+            border: 2px solid var(--accent-color);
+            background: var(--input-bg);
+            min-width: 120px;
+            color: var(--text-color);
+        }
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 2rem 0 1rem;
+        }
+        .btn {
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            flex: 1 1 auto;
+            min-width: 120px;
+            color: white;
+            transition: transform 0.1s;
+        }
+        .btn:hover {
+            transform: scale(1.02);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0FA958, #0A7C43);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #FF8A00, #FF5A2F);
+        }
+        .btn-success:disabled {
+            background: #94d3a2;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+        .btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-color);
+            border: 2px solid var(--accent-color);
+            transition: background 0.3s, color 0.3s;
+        }
+        .btn-secondary:hover {
+            background: #dbe4f0;
+        }
+        body.dark-mode .btn-secondary:hover {
+            background: #3a4a40;
+        }
+        /* Botón WhatsApp flotante */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25D366;
+            color: white;
+            border-radius: 3rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 999;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+        .whatsapp-float:hover {
+            background: #20b859;
+            transform: scale(1.05);
+        }
+        .whatsapp-float img {
+            width: 24px;
+            height: 24px;
+        }
+        .result-box {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            border: 3px solid var(--accent-color);
+            margin: 1.5rem 0;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .result-line {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .tarifa-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--table-bg);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: background 0.3s;
+        }
+        .tarifa-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .valor {
+            font-weight: 700;
+            color: var(--accent-color);
+            text-align: right;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--footer-color);
+            font-size: 0.85rem;
+            border-top: 2px dashed var(--accent-color);
+            padding-top: 1.2rem;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .copyright {
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+        .badge-local {
+            background: var(--badge-local-bg);
+            color: var(--badge-local-text);
+            padding: 0.2rem 1.2rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%230A7C43" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+            background-size: 1.2rem;
+        }
+        body.dark-mode select {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23FF8A00" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');
+        }
+        .historial-panel {
+            background: var(--historial-bg);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            margin: 1rem 0 0;
+            border: 2px solid var(--accent-color);
+            max-height: 250px;
+            overflow-y: auto;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .historial-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px dashed var(--accent-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        .historial-item:hover {
+            background: rgba(255,138,0,0.2);
+        }
+        /* Comprobante con estilos fijos (no usa variables porque se renderiza como imagen) */
+        #comprobante-print {
+            width: 360px;
+            background: white;
+            padding: 1.2rem;
+            border-radius: 1.5rem;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border: 4px solid #FF8A00;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+        }
+        #comprobante-print * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        #comprobante-print .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0 0 0.3rem 0;
+            height: 60px;
+        }
+        #comprobante-print .header img {
+            max-width: 50px;
+            max-height: 50px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            background: #f0f0f0;
+            border-radius: 8px;
+        }
+        #comprobante-print .header h2 {
+            color: #0A7C43;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 1px 1px 0 rgba(255,138,0,0.2);
+            line-height: 1.2;
+        }
+        #comprobante-print .slogan {
+            color: #0FA958;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px dashed #FF8A00;
+            padding-bottom: 0.3rem;
+            font-style: italic;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #comprobante-print .empresa {
+            background: #f0f7f0;
+            border-radius: 1rem;
+            padding: 0.4rem 0.6rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.65rem;
+            text-align: left;
+            border: 1px solid #0FA958;
+            color: #0A7C43;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            word-break: break-word;
+            min-height: 60px;
+        }
+        #comprobante-print .empresa p {
+            margin: 0.1rem 0;
+            white-space: normal;
+            overflow-wrap: break-word;
+        }
+        #comprobante-print .local {
+            background: linear-gradient(135deg, #FF8A00, #FF5A2F);
+            color: white;
+            padding: 0.4rem 0.2rem;
+            border-radius: 3rem;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 3px 6px rgba(255,90,47,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        #comprobante-print .fecha {
+            color: #0A7C43;
+            font-size: 0.7rem;
+            margin-bottom: 0.8rem;
+            background: #fff3e0;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            display: inline-block;
+            border: 1px solid #FF8A00;
+            font-weight: 500;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #comprobante-print .detalle {
+            background: #fafafa;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            text-align: left;
+            border: 2px solid #0FA958;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+        #comprobante-print .fila {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.4rem 0;
+            font-size: 0.75rem;
+            color: #2d4a3b;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 0.2rem;
+            gap: 0.5rem;
+        }
+        #comprobante-print .fila span:first-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+        #comprobante-print .fila span:last-child {
+            white-space: nowrap;
+            font-weight: 600;
+            text-align: right;
+        }
+        #comprobante-print .fila.total {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #0FA958;
+            border-top: 3px solid #FF8A00;
+            border-bottom: none;
+            padding-top: 0.6rem;
+            margin-top: 0.6rem;
+            margin-bottom: 0;
+        }
+        #comprobante-print .gracias {
+            font-weight: 600;
+            color: #0A7C43;
+            margin: 0.8rem 0 0.2rem;
+            font-size: 0.9rem;
+            border-top: 2px solid #FF8A00;
+            padding-top: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Toast */
+        #toast-tiempo {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--toast-bg);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 3rem;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+            z-index: 3000;
+            display: none;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid var(--accent-color);
+            white-space: nowrap;
+        }
+        #flotante-generando {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(10, 124, 67, 0.95);
+            color: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 3rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border: 3px solid #FF8A00;
+            backdrop-filter: blur(2px);
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container { padding: 0.8rem; }
+            .logo-center { margin-bottom: 0.8rem; }
+            .logo-center img { max-width: 120px; margin-bottom: 0.2rem; }
+            .logo-center h1 { font-size: 1.8rem; margin-top: 0; }
+            .logo-center .slogan { font-size: 0.9rem; margin-top: 0.2rem; padding-left: 0.8rem; }
+            .card { padding: 1rem; margin-bottom: 1rem; border-radius: 1.5rem; }
+            .input-group { margin-bottom: 0.8rem; }
+            label { margin-bottom: 0.2rem; font-size: 0.9rem; }
+            input, select { padding: 0.7rem 1rem; font-size: 0.9rem; }
+            .cliente-row { gap: 0.5rem; margin-bottom: 0.8rem; }
+            .pago-container { padding: 0.7rem 1rem; margin-bottom: 0.8rem; gap: 0.5rem; }
+            .pago-label { font-size: 0.9rem; }
+            .radio-group { gap: 1rem; }
+            .radio-group label { font-size: 0.9rem; }
+            .valor-pedido-container { min-width: 100%; }
+            .valor-pedido-container span { font-size: 0.9rem; }
+            .valor-pedido-container input { padding: 0.6rem 0.8rem; }
+            .stats-row { padding: 0.6rem 1rem; margin-bottom: 1rem; border-radius: 3rem; }
+            .stat-item { gap: 0.4rem; font-size: 0.9rem; }
+            .stat-badge { padding: 0.2rem 0.8rem; }
+            .button-row { gap: 0.5rem; margin: 1rem 0 0.5rem; }
+            .btn { padding: 0.7rem; font-size: 0.9rem; min-width: 100px; }
+            .result-box { padding: 1rem; margin: 1rem 0; }
+            .result-line { font-size: 1.6rem; }
+            #detalleCalculo { font-size: 0.8rem; }
+            .grid-2 { gap: 1rem; }
+            .tarifa-table td { padding: 0.5rem; font-size: 0.85rem; }
+            .footer { margin-top: 1rem; padding-top: 0.8rem; font-size: 0.75rem; }
+            .whatsapp-float { padding: 0.5rem 1rem; bottom: 5px; right: 5px; font-size: 0.8rem; }
+            .whatsapp-float img { width: 20px; height: 20px; }
+            .historial-panel { max-height: 180px; padding: 0.8rem; }
+            .historial-item { padding: 0.4rem; font-size: 0.8rem; }
+            #toast-tiempo { font-size: 0.8rem; padding: 0.6rem 1rem; bottom: 60px; }
+            #flotante-generando { padding: 1rem 2rem; font-size: 1rem; }
+            .dark-toggle { top: 10px; right: 10px; width: 40px; height: 40px; font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Botón flotante para modo oscuro (solo emoji) -->
+    <div class="dark-toggle" id="darkModeToggle">🌙</div>
+
+    <a class="whatsapp-float" href="https://wa.me/593985562172?text=Hola%20GOXPRESS%2C%20necesito%20ayuda%20con%20un%20pedido" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp"> Soporte
+    </a>
+    <div class="container">
+        <div class="logo-center">
+            <img src="Goxpress.png" alt="GOXPRESS Logo" id="logo-principal" onerror="this.src='https://via.placeholder.com/180x80?text=GOXPRESS'">
+            <h1>GOXPRESS</h1>
+            <div class="slogan">Donde Quieras, Cuando Quieras.</div>
+        </div>
+        <div class="card">
+            <h2 style="margin-bottom:1rem; color:var(--primary-color);">📦 Calcula tu Tarifa</h2>
+            <div style="margin-bottom:1.5rem;"><span class="badge-local">📍 Elige tu local</span>
+                <select id="localSelect">
+                    <option value="ALAS 8 Ambato">ALAS 8 Ambato</option>
+                    <option value="Apapear&Sweat">Apapear&Sweat</option>
+                    <option value="BerdiGrill">BerdiGrill</option>
+                    <option value="Bolonche">Bolonche</option>
+                    <option value="Brissa Marisqueria">Brisa & Marea</option>
+                    <option value="Brissa Marisqueria">Brissa Marisqueria</option>
+                    <option value="Broos Burguer Las Chancro">Broos Burguer Las Chancro</option>
+                    <option value="Broster Casero">Broster Casero</option>
+                    <option value="Camaron Reventado">Camaron Reventado</option>
+                    <option value="Chifa Chao Zhou">Chifa Chao Zhou</option>
+                    <option value="Chifa China 2">Chifa China 2</option>
+                    <option value="Chifa Yin Yang">Chifa Yin Yang</option>
+                    <option value="Combo Loco">Combo Loco</option>
+                    <option value="Cosmopolita Coffee ">Cosmopolita Coffee </option>
+                    <option value="Donas">Donas</option>
+                    <option value="Donald's Pizzeria">Donald's Pizzeria</option>
+                    <option value="Deluxe Flower">Deluxe Flower</option>
+                    <option value="El Lince Restaurante">El Lince Restaurante</option>
+                    <option value="El Paisa">El Paisa</option>
+                    <option value="El Parrillero B.B.Q - Grill">El Parrillero B.B.Q - Grill</option>
+                    <option value="El Toque Guayaco 2">El Toque Guayaco 2</option>
+                    <option value="El Rincón de las Alitas">El Rincón de las Alitas</option>
+                    <option value="El Rincón Venezolano">El Rincón Venezolano</option>
+                    <option value="El Ta-kamex">El Ta-kamex</option>
+                    <option value="El Sambito">El Sambito</option>
+                    <option value="Fast Broaster">Fast Broaster</option>
+                    <option value="Fast Chicken">Fast Chicken</option>
+                    <option value="Flower">Flower</option>
+                    <option value="Foggatta">Foggatta</option>
+                    <option value="Foodut Pizzeria">Foodut Pizzeria</option>
+                    <option value="Inari Sushi Rock">Inari Sushi Rock</option>
+                    <option value="Kaffa">Kaffa</option>
+                    <option value="King Pizza">King Pizza</option>
+                    <option value="KFC">KFC</option>
+                    <option value="La Cigarra Pizzeria">La Cigarra Pizzeria</option>
+                    <option value="La Farine Pizzeria">La Farine Pizzeria</option>
+                    <option value="La Fornace">La Fornace</option>
+                    <option value="La Herencia">La Herencia</option>
+                    <option value="la VAK Pizzeria">la VAK Pizzeria</option>
+                    <option value="Media Noche Restaurant">Media Noche Restaurant</option>
+                    <option value="Mimo Parrilla Gourmet">Mimo Parrilla Gourmet</option>
+                    <option value="MM Wings">MM Wings</option>
+                    <option value="Mr Parrilla">Mr Parrilla</option>
+                    <option value="Panda Sushi Rolls">Panda Sushi Rolls</option>
+                    <option value="Pizzeria Giorginos">Pizzeria Giorginos</option>
+                    <option value="Pizza House">Pizza House</option>
+                    <option value="Play Wings">Play Wings</option>
+                    <option value="Pollo Alcalá">Pollo Alcalá</option>
+                    <option value="Pollo Campero">Pollo Campero</option>
+                    <option value="Pollo Fenix">Pollo Fenix</option>
+                    <option value="Pollo Fino">Pollo Fino</option>
+                    <option value="Potato Tornado">Potato Tornado</option>
+                    <option value="Que Monada Bolones">Que Monada Bolones</option>
+                    <option value="Roll and Bowl">Roll and Bowl</option> 
+                    <option value="Salchipapas en Balde">Salchipapas en Balde</option>
+                    <option value="Saiyajin Sushi Rolls">Saiyajin Sushi Rolls</option>
+                    <option value="Takumi EC">Takumi EC</option>
+                    <option value="Tokio Fast">Tokio Fast</option>
+                    <option value="Tribeca">Tribeca</option>
+                    <option value="TUS Alitas Ambato">TUS Alitas Ambato</option>
+                    <option value="Wings Garden">Wings Garden</option>
+                    <option value="Your Burger Fast Food">Your Burger Fast Food</option>
+                </select>
+            </div>
+            <!-- Campos de cliente -->
+            <div class="cliente-row">
+                <div class="input-group"><label>👤 Nombre del cliente</label><input type="text" id="clienteNombre" placeholder="Ej: Juan Pérez" list="nombres-suggest"></div>
+                <div class="input-group"><label>📞 Contacto (WhatsApp)</label><input type="tel" id="clienteTelefono" placeholder="0999999999" pattern="[0-9]{10}"></div>
+            </div>
+            <datalist id="nombres-suggest"></datalist>
+
+            <!-- Contenedor: Método de pago y valor del pedido -->
+            <div class="pago-container">
+                <span class="pago-label">💳 Pago:</span>
+                <div class="radio-group">
+                    <label><input type="radio" name="metodoPago" value="Efectivo" checked> Efectivo</label>
+                    <label><input type="radio" name="metodoPago" value="Transferencia"> Transferencia</label>
+                </div>
+                <div class="valor-pedido-container">
+                    <span>💰 Valor pedido:</span>
+                    <input type="number" id="valorPedido" step="0.01" min="0" placeholder="0.00" value="0.00">
+                </div>
+            </div>
+
+            <div class="input-group"><label>📏 Distancia (km)</label><input type="number" id="distancia" step="0.1" min="0" placeholder="Ej: 3.5" value="3.5"></div>
+            <div class="stats-row">
+                <div class="stat-item"><span>📋 Pedidos hoy:</span><span class="stat-badge" id="pedidosHoy">0</span></div>
+                <div class="stat-item"><span>🎁 Descuento:</span><span class="stat-badge" id="descuentoActual">0%</span></div>
+            </div>
+
+            <!-- Historial de pedidos (oculto hasta que se presione el botón) -->
+            <div id="historialPanel" class="historial-panel" style="display: none;">
+                <strong>📜 Historial de pedidos</strong>
+                <div id="historialLista"></div>
+            </div>
+
+            <div class="button-row">
+                <button class="btn btn-primary" id="btnCalcular">Calcular</button>
+                <button class="btn btn-success" id="btnConfirmar" disabled>Confirmar Pedido</button>
+                <button class="btn btn-secondary" id="btnLimpiar">Limpiar</button>
+                <button class="btn btn-secondary" id="btnVerHistorial">📋 Ver Historial</button>
+            </div>
+            <div class="result-box" id="resultadoBox" style="display:none;">
+                <div style="color:var(--accent-color);">Valor estimado</div>
+                <div class="result-line" id="resultadoMonto">$0.00</div>
+                <div style="font-size:0.9rem; color:var(--primary-color);" id="detalleCalculo"></div>
+            </div>
+        </div>
+        <div class="grid-2">
+            <div><h3 style="color:var(--primary-color);">📋 Estructura de Tarifas</h3><table class="tarifa-table"><tr><td>Tarifa Base (0-4 km)</td><td class="valor">$2.00</td></tr><tr><td>Adicional (cada km o fracción después de 4 km)</td><td class="valor">$0.25</td></tr><tr><td>Descuento por volumen</td><td class="valor">10% en pedidos múltiplos de 7</td></tr></table><p style="font-size:0.85rem; color:var(--accent-color);">*Descuento en pedidos 7, 14, 21...</p></div>
+            <div><h3 style="color:var(--primary-color);">⛽ Costos Operacionales</h3><table class="tarifa-table"><tr><td>Gasolina</td><td class="valor">$0.0475/km</td></tr><tr><td>Mantenimiento</td><td class="valor">$0.01/km</td></tr><tr><td>Otros Gastos</td><td class="valor">$0.02/km</td></tr></table><p style="font-size:0.8rem; color:var(--accent-color);">Costos considerados en Ecuador.</p></div>
+        </div>
+        <div class="footer"><div>© 2026 GOXPRESS · Ambato, Ecuador</div><div class="copyright">Siempre cerca de ti</div></div>
+    </div>
+
+    <!-- Toast flotante -->
+    <div id="toast-tiempo">🚚 Tiempo estimado de llegada al local: 5 a 10 minutos. Considera posibles retrasos.</div>
+    <div id="flotante-generando">⏳ Generando comprobante...</div>
+
+    <!-- Comprobante oculto (sin QR) -->
+    <div id="comprobante-print" style="display:none;"></div>
+
+    <script>
+        (function() {
+            // ========== CONFIGURACIÓN ==========
+            const STORAGE_KEY = 'goxpress_orders_by_local';
+            const HISTORIAL_KEY = 'goxpress_historial';
+            const LAST_DATE_KEY = 'goxpress_last_date';
+            const DARK_MODE_KEY = 'goxpress_dark_mode';
+            const TARIFA_BASE = 2.0;
+            const KM_LIMITE = 4;
+            const ADICIONAL_POR_KM = 0.25;
+
+            let ordersByLocal = {};
+            let historialPedidos = [];
+            let currentLocal = '';
+            let pendingCalculation = null;
+
+            // Elementos DOM
+            const distanciaInput = document.getElementById('distancia');
+            const pedidosSpan = document.getElementById('pedidosHoy');
+            const descuentoSpan = document.getElementById('descuentoActual');
+            const resultadoBox = document.getElementById('resultadoBox');
+            const resultadoMonto = document.getElementById('resultadoMonto');
+            const detalleCalculo = document.getElementById('detalleCalculo');
+            const localSelect = document.getElementById('localSelect');
+            const btnCalcular = document.getElementById('btnCalcular');
+            const btnConfirmar = document.getElementById('btnConfirmar');
+            const btnLimpiar = document.getElementById('btnLimpiar');
+            const btnVerHistorial = document.getElementById('btnVerHistorial');
+            const comprobanteDiv = document.getElementById('comprobante-print');
+            const logoPrincipal = document.getElementById('logo-principal');
+            const toastTiempo = document.getElementById('toast-tiempo');
+            const flotanteGenerando = document.getElementById('flotante-generando');
+            const clienteNombre = document.getElementById('clienteNombre');
+            const clienteTelefono = document.getElementById('clienteTelefono');
+            const radioEfectivo = document.querySelector('input[name="metodoPago"][value="Efectivo"]');
+            const valorPedidoInput = document.getElementById('valorPedido');
+            const historialPanel = document.getElementById('historialPanel');
+            const historialLista = document.getElementById('historialLista');
+            const nombresSuggest = document.getElementById('nombres-suggest');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            // ========== FUNCIÓN PARA APLICAR TEMA ==========
+            function applyTheme() {
+                const currentTheme = localStorage.getItem(DARK_MODE_KEY);
+                if (currentTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    darkModeToggle.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    darkModeToggle.textContent = '🌙';
+                }
+            }
+
+            // Aplicar tema al cargar
+            applyTheme();
+
+            // Evento del botón
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    darkModeToggle.textContent = '☀️';
+                    localStorage.setItem(DARK_MODE_KEY, 'dark');
+                } else {
+                    darkModeToggle.textContent = '🌙';
+                    localStorage.setItem(DARK_MODE_KEY, 'light');
+                }
+            });
+
+            // ========== FUNCIÓN PARA REINICIAR SI ES NUEVO DÍA ==========
+            function reiniciarSiNuevoDia() {
+                const hoy = new Date().toDateString();
+                const ultimoDia = localStorage.getItem(LAST_DATE_KEY);
+                if (ultimoDia !== hoy) {
+                    ordersByLocal = {};
+                    historialPedidos = [];
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(ordersByLocal));
+                    localStorage.setItem(HISTORIAL_KEY, JSON.stringify(historialPedidos));
+                    localStorage.setItem(LAST_DATE_KEY, hoy);
+                    const local = localSelect.value;
+                    if (!ordersByLocal.hasOwnProperty(local)) ordersByLocal[local] = 0;
+                    currentLocal = local;
+                    actualizarContadorUI();
+                    if (historialPanel.style.display === 'block') {
+                        actualizarHistorialUI(currentLocal);
+                    }
+                } else {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    ordersByLocal = stored ? JSON.parse(stored) || {} : {};
+                    const hist = localStorage.getItem(HISTORIAL_KEY);
+                    historialPedidos = hist ? JSON.parse(hist) || [] : [];
+                }
+            }
+
+            // ========== FUNCIONES DE ALMACENAMIENTO ==========
+            function cargarDatos() {
+                reiniciarSiNuevoDia();
+                const local = localSelect.value;
+                if (!ordersByLocal.hasOwnProperty(local)) ordersByLocal[local] = 0;
+                currentLocal = local;
+                actualizarContadorUI();
+                actualizarSuggestions();
+            }
+
+            function guardarDatos() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(ordersByLocal));
+                localStorage.setItem(HISTORIAL_KEY, JSON.stringify(historialPedidos));
+                localStorage.setItem(LAST_DATE_KEY, new Date().toDateString());
+            }
+
+            function getPedidosLocal() { return ordersByLocal[currentLocal] || 0; }
+            function getDescuentoPorPedido(num) { return (num % 7 === 0) ? 10 : 0; }
+            function actualizarContadorUI() {
+                const pedidos = getPedidosLocal();
+                pedidosSpan.textContent = pedidos;
+                descuentoSpan.textContent = getDescuentoPorPedido(pedidos + 1) + '%';
+            }
+
+            // ========== FUNCIONES DE CÁLCULO ==========
+            function redondear25Superior(valor) { return Math.ceil(valor * 4) / 4; }
+            function calcularTarifa(dist, desc) {
+                if (isNaN(dist) || dist < 0) dist = 0;
+                let subtotal = TARIFA_BASE;
+                if (dist > KM_LIMITE) {
+                    const kmAdicional = Math.ceil(dist - KM_LIMITE);
+                    subtotal += kmAdicional * ADICIONAL_POR_KM;
+                }
+                const descuento = subtotal * desc / 100;
+                let final = subtotal - descuento;
+                final = redondear25Superior(final);
+                return { subtotal: Math.round(subtotal*100)/100, descuento: Math.round(descuento*100)/100, final, porcentajeDesc: desc };
+            }
+            function mostrarResultado(dist, res, num) {
+                resultadoBox.style.display = 'block';
+                resultadoMonto.textContent = `$${res.final.toFixed(2)}`;
+                detalleCalculo.innerHTML = `Pedido #${num} | ${dist.toFixed(2)} km | Subtotal: $${res.subtotal.toFixed(2)} | Desc: ${res.porcentajeDesc}% (-$${res.descuento.toFixed(2)})`;
+            }
+
+            // ========== SONIDO ==========
+            function playConfirmSound() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.2);
+                } catch (e) { console.log('Audio no soportado'); }
+            }
+
+            // ========== COMPROBANTE SIN QR ==========
+            function descargarComprobanteComoImagen(calc) {
+                mostrarFlotanteGenerando(true);
+                const local = calc.local || currentLocal;
+                const fecha = new Date().toLocaleString('es-EC', { dateStyle: 'full', timeStyle: 'short' });
+                const logoSrc = logoPrincipal && logoPrincipal.src ? logoPrincipal.src : 'Goxpress.png';
+                const metodoPago = calc.metodoPago || 'Efectivo';
+                const valorPedido = calc.valorPedido || 0;
+                const nombre = calc.nombre || '';
+                const telefono = calc.telefono || '';
+
+                comprobanteDiv.innerHTML = `
+                    <div class="header">
+                        <img src="${logoSrc}" alt="Logo">
+                        <h2>GOXPRESS</h2>
+                    </div>
+                    <div class="slogan">Donde Quieras, Cuando Quieras.</div>
+                    <div class="empresa">
+                        <p><strong>ID:</strong> 1762556528 | <strong>GERENTE:</strong> REYNIER RODRIGUEZ NAVAS</p>
+                        <p>Ambato, Ecuador | 📞 0985562172 - 0978799466</p>
+                    </div>
+                    <div class="local">${local}</div>
+                    <div class="fecha">${fecha}</div>
+                    <div class="detalle">
+                        <div class="fila"><span>Pedido #</span><strong>${calc.orderCount}</strong></div>
+                        <div class="fila"><span>Cliente:</span>${nombre} ${telefono ? '📞'+telefono : ''}</div>
+                        <div class="fila"><span>Distancia:</span>${calc.distance.toFixed(2)} km</div>
+                        <div class="fila"><span>Método pago:</span>${metodoPago}</div>
+                        <div class="fila"><span>Valor pedido:</span>$${valorPedido.toFixed(2)}</div>
+                        <div class="fila"><span>Subtotal envío:</span>$${calc.subtotal.toFixed(2)}</div>
+                        <div class="fila"><span>Descuento (${calc.discountPercent}%):</span>-$${(calc.subtotal - calc.final).toFixed(2)}</div>
+                        <div class="fila total"><span>TOTAL ENVÍO:</span>$${calc.final.toFixed(2)}</div>
+                    </div>
+                    <div class="gracias">¡Gracias por confiar en GOXPRESS!</div>
+                `;
+                comprobanteDiv.style.display = 'block';
+
+                html2canvas(comprobanteDiv, { scale: 2, backgroundColor: '#ffffff', useCORS: true }).then(canvas => {
+                    comprobanteDiv.style.display = 'none';
+                    canvas.toBlob(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `factura_${local}_${calc.orderCount}.jpg`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        mostrarFlotanteGenerando(false);
+                        setTimeout(() => mostrarToast('🚚 Tiempo estimado de llegada al local: 5 a 10 minutos. Considera posibles retrasos.'), 100);
+                        playConfirmSound();
+                    }, 'image/jpeg', 0.95);
+                }).catch(e => { alert('Error al generar imagen'); comprobanteDiv.style.display = 'none'; mostrarFlotanteGenerando(false); });
+            }
+
+            // ========== TOAST ==========
+            function mostrarToast(mensaje) {
+                toastTiempo.textContent = mensaje;
+                toastTiempo.style.display = 'block';
+                setTimeout(() => toastTiempo.style.display = 'none', 5000);
+            }
+            function mostrarFlotanteGenerando(mostrar) { flotanteGenerando.style.display = mostrar ? 'block' : 'none'; }
+
+            // ========== ACTUALIZAR SUGERENCIAS ==========
+            function actualizarSuggestions() {
+                const nombres = historialPedidos.map(p => p.nombre).filter((v,i,a)=>a.indexOf(v)===i);
+                nombresSuggest.innerHTML = nombres.map(n => `<option value="${n}">`).join('');
+            }
+
+            // ========== MOSTRAR HISTORIAL POR LOCAL ==========
+            function actualizarHistorialUI(local = currentLocal) {
+                const pedidosFiltrados = historialPedidos.filter(p => p.local === local);
+                if (pedidosFiltrados.length === 0) {
+                    historialLista.innerHTML = '<div>No hay pedidos para este local.</div>';
+                } else {
+                    historialLista.innerHTML = pedidosFiltrados.slice(-10).reverse().map(p => {
+                        return `<div class="historial-item" data-nombre="${p.nombre}" data-telefono="${p.telefono}" data-distancia="${p.distancia}" data-valor="${p.valorPedido}" data-metodo="${p.metodoPago}">
+                            <span>${p.fecha.slice(0,10)} - ${p.nombre}</span>
+                            <span>$${p.final}</span>
+                        </div>`;
+                    }).join('');
+                    document.querySelectorAll('.historial-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            clienteNombre.value = item.dataset.nombre || '';
+                            clienteTelefono.value = item.dataset.telefono || '';
+                            distanciaInput.value = item.dataset.distancia || '';
+                            valorPedidoInput.value = item.dataset.valor || '0.00';
+                            if (item.dataset.metodo === 'Efectivo') radioEfectivo.checked = true;
+                            else document.querySelector('input[name="metodoPago"][value="Transferencia"]').checked = true;
+                        });
+                    });
+                }
+                historialPanel.style.display = 'block';
+                btnVerHistorial.textContent = '📋 Ocultar Historial';
+            }
+
+            function toggleHistorial() {
+                if (historialPanel.style.display === 'none') {
+                    actualizarHistorialUI(currentLocal);
+                } else {
+                    historialPanel.style.display = 'none';
+                    btnVerHistorial.textContent = '📋 Ver Historial';
+                }
+            }
+
+            // ========== ACCIONES ==========
+            function onLocalChange() {
+                reiniciarSiNuevoDia();
+                currentLocal = localSelect.value;
+                if (!ordersByLocal.hasOwnProperty(currentLocal)) ordersByLocal[currentLocal] = 0;
+                actualizarContadorUI();
+                pendingCalculation = null;
+                btnConfirmar.disabled = true;
+                resultadoBox.style.display = 'none';
+                if (historialPanel.style.display === 'block') {
+                    actualizarHistorialUI(currentLocal);
+                }
+            }
+
+            function accionCalcular() {
+                reiniciarSiNuevoDia();
+                const dist = parseFloat(distanciaInput.value);
+                if (isNaN(dist) || dist < 0) { alert('Distancia válida requerida'); return; }
+                const sig = getPedidosLocal() + 1;
+                const res = calcularTarifa(dist, getDescuentoPorPedido(sig));
+                pendingCalculation = { distance: dist, subtotal: res.subtotal, discountPercent: res.porcentajeDesc, final: res.final, orderCount: sig, local: currentLocal };
+                mostrarResultado(dist, res, sig);
+                btnConfirmar.disabled = false;
+            }
+
+            function accionConfirmar() {
+                reiniciarSiNuevoDia();
+                if (!pendingCalculation) { alert('Calcula primero'); return; }
+                const nombre = clienteNombre.value.trim();
+                const telefono = clienteTelefono.value.trim();
+                if (!nombre) { alert('Ingresa el nombre del cliente'); return; }
+                if (!telefono || !/^\d{10}$/.test(telefono)) { alert('Ingresa un teléfono válido (10 dígitos)'); return; }
+
+                const metodoPago = document.querySelector('input[name="metodoPago"]:checked').value;
+                const valorPedido = parseFloat(valorPedidoInput.value) || 0;
+
+                ordersByLocal[currentLocal] = (ordersByLocal[currentLocal] || 0) + 1;
+                const nuevoNumero = ordersByLocal[currentLocal];
+                const desc = getDescuentoPorPedido(nuevoNumero);
+                const res = calcularTarifa(pendingCalculation.distance, desc);
+
+                const pedidoHist = {
+                    fecha: new Date().toISOString(),
+                    local: currentLocal,
+                    nombre,
+                    telefono,
+                    distancia: pendingCalculation.distance,
+                    subtotal: res.subtotal,
+                    descuento: res.descuento,
+                    final: res.final,
+                    metodoPago,
+                    valorPedido,
+                    orderCount: nuevoNumero
+                };
+                historialPedidos.push(pedidoHist);
+                guardarDatos();
+                actualizarSuggestions();
+                if (historialPanel.style.display === 'block') {
+                    actualizarHistorialUI(currentLocal);
+                }
+
+                const datosComprobante = {
+                    distance: pendingCalculation.distance,
+                    subtotal: res.subtotal,
+                    discountPercent: desc,
+                    final: res.final,
+                    orderCount: nuevoNumero,
+                    local: currentLocal,
+                    metodoPago,
+                    valorPedido,
+                    nombre,
+                    telefono
+                };
+                descargarComprobanteComoImagen(datosComprobante);
+                actualizarContadorUI();
+                mostrarResultado(pendingCalculation.distance, res, nuevoNumero);
+                btnConfirmar.disabled = true;
+                pendingCalculation = null;
+            }
+
+            function accionLimpiar() {
+                distanciaInput.value = '';
+                valorPedidoInput.value = '0.00';
+                clienteNombre.value = '';
+                clienteTelefono.value = '';
+                radioEfectivo.checked = true;
+                resultadoBox.style.display = 'none';
+                pendingCalculation = null;
+                btnConfirmar.disabled = true;
+            }
+
+            // ========== INICIALIZACIÓN ==========
+            document.addEventListener('DOMContentLoaded', () => {
+                cargarDatos();
+                // Ordenar select
+                const opts = Array.from(localSelect.options);
+                opts.sort((a,b) => a.text.localeCompare(b.text));
+                localSelect.innerHTML = '';
+                opts.forEach(o => localSelect.appendChild(o));
+                localSelect.addEventListener('change', onLocalChange);
+                btnCalcular.addEventListener('click', accionCalcular);
+                btnConfirmar.addEventListener('click', accionConfirmar);
+                btnLimpiar.addEventListener('click', accionLimpiar);
+                btnVerHistorial.addEventListener('click', toggleHistorial);
+            });
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
